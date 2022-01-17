@@ -1,0 +1,16 @@
+# ignore all files
+*
+# but include directories
+!*/
+
+# code
+!/update.js
+!/scripts/**
+
+# docs
+!/*.md
+
+# misc
+!/.editorconfig
+!/.gitignore
+!/LICENSE
