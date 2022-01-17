@@ -1,0 +1,147 @@
+disableLog("getServerMoneyAvailable");
+clearLog();
+
+moneyPercentageLvl1 = 0.50;
+moneyPercentageLvl2 = 0.25;
+moneyPercentageLvl3 = 0.10;
+moneyPercentageRam = 0.25;
+moneyPercentageCpu = 0.25;
+maxlvl = 200;
+maxram = 64;
+maxcpu = 16;
+
+if (hacknet.numNodes() === 0) {
+    if (hacknet.getPurchaseNodeCost() <= getServerMoneyAvailable('home')) {
+        print(' -> purchasing first node for ' + Math.round(hacknet.getPurchaseNodeCost()).toFixed(2) + '$');
+        hacknet.purchaseNode();
+    } else {
+        print('-> no moneys for first node');
+        exit();
+    }
+}
+
+while (true) {
+    for (i = 0; i < hacknet.numNodes(); i++) {
+
+        moneys = Math.round(getServerMoneyAvailable('home') * 0.99);
+        node = hacknet.getNodeStats(i);
+
+        stage2rand = Math.floor((Math.random() * 5) + 1);
+        stage3rand = Math.floor((Math.random() * 10) + 1);
+
+        print('> ' + 'hacknet-node-' + i + ' level: ' + node.level + ' | ram: ' + node.ram + ' | cores: ' + node.cores);
+
+        // bis lvl 75
+        // nur lvl kaufen
+        // node anzahl: level/6
+        if (node.level <= 75) {
+            if (hacknet.numNodes() < (node.level / 6)) {
+                if (hacknet.getPurchaseNodeCost() <= (moneys * moneyPercentageLvl1)) {
+                    print(' -> purchasing new node for ' + Math.round(hacknet.getPurchaseNodeCost()).toFixed(2) + '$');
+                    hacknet.purchaseNode();
+                }
+            }
+            if (hacknet.getLevelUpgradeCost(i, 100) <= (moneys * moneyPercentageLvl1) && node.level < maxlvl) {
+                print(' -> purchasing 100 level for ' + Math.round(hacknet.getLevelUpgradeCost(i, 100)).toFixed(2) + '$');
+                hacknet.upgradeLevel(i, 100);
+            } else if (hacknet.getLevelUpgradeCost(i, 50) <= (moneys * moneyPercentageLvl1) && node.level < maxlvl) {
+                print(' -> purchasing 50 level for ' + Math.round(hacknet.getLevelUpgradeCost(i, 50)).toFixed(2) + '$');
+                hacknet.upgradeLevel(i, 50);
+            } else if (hacknet.getLevelUpgradeCost(i, 33) <= (moneys * moneyPercentageLvl1) && node.level < maxlvl) {
+                print(' -> purchasing 33 level for ' + Math.round(hacknet.getLevelUpgradeCost(i, 33)).toFixed(2) + '$');
+                hacknet.upgradeLevel(i, 33);
+            } else if (hacknet.getLevelUpgradeCost(i, 10) <= (moneys * moneyPercentageLvl1) && node.level < maxlvl) {
+                print(' -> purchasing 10 level for ' + Math.round(hacknet.getLevelUpgradeCost(i, 10)).toFixed(2) + '$');
+                hacknet.upgradeLevel(i, 10);
+            } else if (hacknet.getLevelUpgradeCost(i, 3) <= (moneys * moneyPercentageLvl1) && node.level < maxlvl) {
+                print(' -> purchasing 3 level for ' + Math.round(hacknet.getLevelUpgradeCost(i, 3)).toFixed(2) + '$');
+                hacknet.upgradeLevel(i, 3);
+            } else if (hacknet.getLevelUpgradeCost(i, 1) <= (moneys * moneyPercentageLvl1) && node.level < maxlvl) {
+                print(' -> purchasing 1 level for ' + Math.round(hacknet.getLevelUpgradeCost(i, 1)).toFixed(2) + '$');
+                hacknet.upgradeLevel(i, 1);
+            }
+        }
+
+        // lvl 76 - 94
+        // lvl + mem alle 4-5 lvl
+        // node anzahl: level/6
+        if (node.level > 75 && node.level < 95) {
+            if (hacknet.numNodes() < (node.level / 6)) {
+                if (hacknet.getPurchaseNodeCost() <= (moneys * moneyPercentageLvl2)) {
+                    print(' -> purchasing new node for ' + Math.round(hacknet.getPurchaseNodeCost()).toFixed(2) + '$');
+                    hacknet.purchaseNode();
+                }
+            }
+            if (stage2rand == 2 || stage2rand == 4) {
+                if (hacknet.getRamUpgradeCost(i, 1) <= (moneys * moneyPercentageRam) && node.ram < maxram) {
+                    print(' -> purchasing memory for ' + Math.round(hacknet.getRamUpgradeCost(i, 1)).toFixed(2) + '$');
+                    hacknet.upgradeRam(i, 1);
+                }
+            } else {
+                if (hacknet.getLevelUpgradeCost(i, 100) <= (moneys * moneyPercentageLvl2) && node.level < maxlvl) {
+                    print(' -> purchasing 100 level for ' + Math.round(hacknet.getLevelUpgradeCost(i, 100)).toFixed(2) + '$');
+                    hacknet.upgradeLevel(i, 100);
+                } else if (hacknet.getLevelUpgradeCost(i, 50) <= (moneys * moneyPercentageLvl2) && node.level < maxlvl) {
+                    print(' -> purchasing 50 level for ' + Math.round(hacknet.getLevelUpgradeCost(i, 50)).toFixed(2) + '$');
+                    hacknet.upgradeLevel(i, 50);
+                } else if (hacknet.getLevelUpgradeCost(i, 33) <= (moneys * moneyPercentageLvl2) && node.level < maxlvl) {
+                    print(' -> purchasing 33 level for ' + Math.round(hacknet.getLevelUpgradeCost(i, 33)).toFixed(2) + '$');
+                    hacknet.upgradeLevel(i, 33);
+                } else if (hacknet.getLevelUpgradeCost(i, 10) <= (moneys * moneyPercentageLvl2) && node.level < maxlvl) {
+                    print(' -> purchasing 10 level for ' + Math.round(hacknet.getLevelUpgradeCost(i, 10)).toFixed(2) + '$');
+                    hacknet.upgradeLevel(i, 10);
+                } else if (hacknet.getLevelUpgradeCost(i, 3) <= (moneys * moneyPercentageLvl2) && node.level < maxlvl) {
+                    print(' -> purchasing 3 level for ' + Math.round(hacknet.getLevelUpgradeCost(i, 3)).toFixed(2) + '$');
+                    hacknet.upgradeLevel(i, 3);
+                } else if (hacknet.getLevelUpgradeCost(i, 1) <= (moneys * moneyPercentageLvl2) && node.level < maxlvl) {
+                    print(' -> purchasing 1 level for ' + Math.round(hacknet.getLevelUpgradeCost(i, 1)).toFixed(2) + '$');
+                    hacknet.upgradeLevel(i, 1);
+                }
+            }
+        }
+
+        // ab lvl 95
+        // immer ram, dann cpu alle 10 lvl
+        // node anzahl: level/7
+        if (node.level >= 95) {
+            if (hacknet.numNodes() < (node.level / 7)) {
+                if (hacknet.getPurchaseNodeCost() <= (moneys * moneyPercentageLvl3)) {
+                    print(' -> purchasing new node for ' + Math.round(hacknet.getPurchaseNodeCost()).toFixed(2) + '$');
+                    hacknet.purchaseNode();
+                }
+            }
+            if (stage3rand == 5) {
+                if (hacknet.getCoreUpgradeCost(i, 1) <= (moneys * moneyPercentageCpu) && node.cores < maxcpu) {
+                    print(' -> purchasing core for ' + Math.round(hacknet.getCoreUpgradeCost(i, 1)).toFixed(2) + '$');
+                    hacknet.upgradeCore(i, 1);
+                }
+            } else if (stage3rand == 3 || stage3rand == 7) {
+                if (hacknet.getRamUpgradeCost(i, 1) <= (moneys * moneyPercentageRam) && node.ram < maxram) {
+                    print(' -> purchasing memory for ' + Math.round(hacknet.getRamUpgradeCost(i, 1)).toFixed(2) + '$');
+                    hacknet.upgradeRam(i, 1);
+                }
+            } else {
+                if (hacknet.getLevelUpgradeCost(i, 100) <= (moneys * moneyPercentageLvl3) && node.level < maxlvl) {
+                    print(' -> purchasing 100 level for ' + Math.round(hacknet.getLevelUpgradeCost(i, 100)).toFixed(2) + '$');
+                    hacknet.upgradeLevel(i, 100);
+                } else if (hacknet.getLevelUpgradeCost(i, 50) <= (moneys * moneyPercentageLvl3) && node.level < maxlvl) {
+                    print(' -> purchasing 50 level for ' + Math.round(hacknet.getLevelUpgradeCost(i, 50)).toFixed(2) + '$');
+                    hacknet.upgradeLevel(i, 50);
+                } else if (hacknet.getLevelUpgradeCost(i, 33) <= (moneys * moneyPercentageLvl3) && node.level < maxlvl) {
+                    print(' -> purchasing 33 level for ' + Math.round(hacknet.getLevelUpgradeCost(i, 33)).toFixed(2) + '$');
+                    hacknet.upgradeLevel(i, 33);
+                } else if (hacknet.getLevelUpgradeCost(i, 10) <= (moneys * moneyPercentageLvl3) && node.level < maxlvl) {
+                    print(' -> purchasing 10 level for ' + Math.round(hacknet.getLevelUpgradeCost(i, 10)).toFixed(2) + '$');
+                    hacknet.upgradeLevel(i, 10);
+                } else if (hacknet.getLevelUpgradeCost(i, 3) <= (moneys * moneyPercentageLvl3) && node.level < maxlvl) {
+                    print(' -> purchasing 3 level for ' + Math.round(hacknet.getLevelUpgradeCost(i, 3)).toFixed(2) + '$');
+                    hacknet.upgradeLevel(i, 3);
+                } else if (hacknet.getLevelUpgradeCost(i, 1) <= (moneys * moneyPercentageLvl3) && node.level < maxlvl) {
+                    print(' -> purchasing 1 level for ' + Math.round(hacknet.getLevelUpgradeCost(i, 1)).toFixed(2) + '$');
+                    hacknet.upgradeLevel(i, 1);
+                }
+            }
+        }
+
+    }
+}

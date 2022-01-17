@@ -1,0 +1,37 @@
+targetArray = read("worker.txt");
+targetRows = targetArray.split("\r\n");
+
+if (args.length !== 0) {
+    print('-> fetching target from args[0]');
+    target = args[0];
+} else if (targetRows[0] !== 0 && targetRows[0] !== "") {
+    print('-> fetching target from worker.txt');
+    target = targetRows[0];
+} else {
+    print('-> ERROR no target');
+    exit();
+}
+
+disableLog("ALL");
+clearLog();
+
+while(true) {
+    print('-> ' + target);
+    print('ram total:    ' + getServerRam(target)[0]);
+    print('money:        ' + getServerMoneyAvailable(target) + ' (' + ((getServerMoneyAvailable(target) / getServerMaxMoney(target)) * 100) + '% of max money)');
+    print('money max:    ' + getServerMaxMoney(target));
+    print('growth:       ' + getServerGrowth(target));
+    print('security:     ' + getServerSecurityLevel(target));
+    print('security min: ' + getServerMinSecurityLevel(target));
+    sleep(30000);
+    print('----------');
+    print('-> ' + target);
+    print('ram total:    ' + getServerRam(target)[0]);
+    print('money:        ' + getServerMoneyAvailable(target) + ' (' + ((getServerMoneyAvailable(target) / getServerMaxMoney(target)) * 100) + '% of max money)');
+    print('money max:    ' + getServerMaxMoney(target));
+    print('growth:       ' + getServerGrowth(target));
+    print('security:     ' + getServerSecurityLevel(target));
+    print('security min: ' + getServerMinSecurityLevel(target));
+    sleep(30000);
+    clearLog();
+}

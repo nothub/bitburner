@@ -10,7 +10,7 @@ export async function main(ns) {
 
     let files = await response.json()
     files.forEach(file => {
-        if (file.type === "file" && file.name.endsWith(".js")) {
+        if (file.type === "file" && (file.name.endsWith(".script") || file.name.endsWith(".ns") || file.name.endsWith(".js"))) {
             ns.tprint(file.download_url)
             // TODO: kill local file, delete local file, download remote file
         } else {

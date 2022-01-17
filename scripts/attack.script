@@ -1,0 +1,78 @@
+target = args[0];
+memory = getServerRam(getHostname());
+memoryUsed = memory[1];
+memory = memory[0];
+cost_weaken = 1.75;
+cost_grow   = 1.75;
+cost_hack   = 1.7;
+cost_system = 13.6;
+exithelper = 0;
+
+kill("remote-weaken.script", getHostname());
+kill("remote-grow.script", getHostname());
+kill("remote-hack.script", getHostname());
+kill("monitoring.script", getHostname());
+
+sleep(5000);
+
+print('-> attack executing on: ' + target);
+
+if (getServerMoneyAvailable(target) > (getServerMaxMoney(target) * 0.5)) {
+    if (getServerSecurityLevel(target) > (getServerMinSecurityLevel(target) * 1.25)) {
+        print('-> weaken target: ' + target);
+        for (t_weaken = Math.floor((memory - cost_system) / cost_weaken); t_weaken > 0; t_weaken--) {
+            print('-> weaken threads: ' + t_weaken);
+            if (run("remote-weaken.script", t_weaken, target)) {
+                exithelper = 1;
+            } else {
+                if (exithelper == 1) {
+                    exithelper = 0;
+                    break;
+                }
+            }
+        }
+    } else {
+        print('-> hack target: ' + target);
+        for (t_hack = Math.floor((memory - cost_system) / cost_hack); t_hack > 0; t_hack--) {
+            print('-> hack threads: ' + t_hack);
+            if (run("remote-hack.script", t_hack, target)) {
+                exithelper = 1;
+            } else {
+                if (exithelper == 1) {
+                    exithelper = 0;
+                    break;
+                }
+            }
+        }
+    }
+} else {
+    if (getServerSecurityLevel(target) > (getServerMinSecurityLevel(target) * 1.25)) {
+        print('-> weaken target: ' + target);
+        for (t_weaken = Math.floor((memory - cost_system) / cost_weaken); t_weaken > 0; t_weaken--) {
+            print('-> weaken threads: ' + t_weaken);
+            if (run("remote-weaken.script", t_weaken, target)) {
+                exithelper = 1;
+            } else {
+                if (exithelper == 1) {
+                    exithelper = 0;
+                    break;
+                }
+            }
+        }
+    } else {
+        print('-> grow target: ' + target);
+        for (t_grow = Math.floor((memory - cost_system) / cost_grow); t_grow > 0; t_grow--) {
+            print('-> grow threads: ' + t_grow);
+            if (run("remote-grow.script", t_grow, target)) {
+                exithelper = 1;
+            } else {
+                if (exithelper == 1) {
+                    exithelper = 0;
+                    break;
+                }
+            }
+        }
+    }
+}
+
+spawn("attack-helper.script", 1, target);

@@ -1,0 +1,139 @@
+disableLog("ALL");
+clearLog();
+
+targetStorage = "server-db.txt";
+targetStorageStatic = "server-db-static.txt";
+loopTimeMinutes = 30;
+logToggle = 0;
+
+while (true) {
+    money = getServerMoneyAvailable("home") * 0.5;
+    targetArray = read(targetStorage);
+    targetRows = targetArray.split("\n");
+    workerArray = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""];
+    workercount = getPurchasedServers().length;
+    serverScan = scan("home");
+    workercount = getPurchasedServers().length;
+    targetcount = 0;
+    active = 0;
+
+    if (fileExists("server-db-static.txt", "home")) {
+        print('-> loading targets static');
+        targetArray = read(targetStorageStatic);
+        targetRows = targetArray.split("\n");
+    }
+
+    if (getPurchasedServers().length === 0) {
+        if (money > 1760000) {
+            print('-> buying first server');
+            run("buy-server.script");
+            while (isRunning("buy-server.script", getHostname())) {
+                if (logToggle === 0) {
+                    print('-> sleep while buy-server.script is running');
+                    logToggle = 1;
+                }
+                sleep(1000);
+            }
+        }
+    }
+
+    if (money > 56320000) {
+        print('-> starting replace-server.script');
+        run("replace-server.script");
+        while (isRunning("replace-server.script", getHostname())) {
+            if (logToggle === 0) {
+                print('-> sleep while replace-server.script is running');
+                logToggle = 1;
+            }
+            sleep(1000);
+        }
+    }
+
+    for (j = 0; j < targetRows.length - 1; j++) {
+        targetHostname = targetRows[j];
+        if (targetHostname !== "") {
+            print('-> found target: ' + targetHostname);
+            targetcount = targetcount + 1;
+        }
+    }
+
+    if (getPurchasedServers().length != 25 && targetcount > workercount) {
+        money = getServerMoneyAvailable("home") * 0.5;
+        if (money > 1760000) {
+            print('-> buying worker');
+            run("buy-server.script");
+            while (isRunning("buy-server.script", getHostname())) {
+                if (logToggle === 0) {
+                    print('-> sleep while buy-server.script is running');
+                    logToggle = 1;
+                }
+                sleep(1000);
+            }
+            workercount = getPurchasedServers().length;
+        } else if (getPurchasedServers().length == 25 && targetcount > workercount) {
+            print('-> maximum number of workers reached!');
+        } else {
+            print('-> WARNING cant buy server 50% money is less then 1.760.000');
+        }
+    }
+
+    for (i = 0; i < workercount; i++) {
+        workerArray[i] = getPurchasedServers()[i];
+    }
+
+    print('-> found ' + workercount + ' workers and ' + targetcount + ' targets');
+
+    count = workercount;
+    if (targetcount > workercount) {
+        count = workercount;
+    } else if (workercount > targetcount) {
+        count = targetcount;
+    }
+
+    for (i = 0; i < getPurchasedServers().length; i++) {
+        workerArray[i] = getPurchasedServers()[i];
+    }
+
+    if (targetcount <= 0) {
+        print('-> WARNING no targets found');
+        print('-> sleep 60 sec');
+        sleep(60000);
+    } else if (workercount <= 0) {
+        print('-> WARNING no workers found');
+    } else if (targetcount > 0 && workercount > 0) {
+        active = 1;
+        for (k = 0; k < count; k++) {
+            worker = workerArray[k];
+            target = targetRows[k];
+            if (fileExists("worker.txt", worker)) {
+                print('-> preparing worker: ' + worker);
+                scp("attack.script", worker);
+                scp("attack-helper.script", worker);
+                scp("monitoring.script", worker);
+                scp("remote-grow.script", worker);
+                scp("remote-hack.script", worker);
+                scp("remote-weaken.script", worker);
+                print('-> linking worker: ' + worker + ' to target: ' + target);
+                exec("attack-helper.script", worker, 1, target);
+            }
+        }
+        print('-> sleep ' + loopTimeMinutes + ' minutes');
+        sleep(loopTimeMinutes * 60 * 1000);
+    }
+
+    if (active == 1) {
+        print('-> linking  ' + workercount + ' workers to ' + targetcount + ' targets');
+        log = 'linking  ' + workercount + ' workers to ' + targetcount + ' targets';
+        print('-> sending log on port: ' + 2);
+        while (true) {
+            if (peek(2) == 'NULL PORT DATA') {
+                print('-> transmitting log: ' + log);
+                writePort(2, log);
+                break;
+            } else if (peek(2) != 'NULL PORT DATA') {
+                print('-> waiting for bandwith on port: ' + 2);
+            }
+        }
+    }
+
+}

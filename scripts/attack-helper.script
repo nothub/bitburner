@@ -1,0 +1,34 @@
+targetArray = read("worker.txt");
+targetRows = targetArray.split("\r\n");
+
+if (args.length !== 0) {
+    print('-> fetching target from args[0]');
+    target = args[0];
+} else if (targetRows[0] !== 0 && targetRows[0] !== "") {
+    print('-> fetching target from worker.txt');
+    target = targetRows[0];
+} else {
+    print('-> ERROR no target');
+    exit();
+}
+
+inactive = 1;
+
+print('-> linking worker: ' + getHostname() + ' to target: ' + target);
+write("worker.txt", target, "w");
+
+while (inactive === 1) {
+memory = getServerRam(getHostname());
+memoryFree = memory[0] - memory[1];
+    print('-> free ram = ' + memoryFree + ' (' + memory[0] + '-' + memory[1] + ')');
+    if (memoryFree > 12) {
+        sleep(10000);
+        print('-> attack executing on: ' + target);
+        run("monitoring.script", 1, target);
+        run("attack.script", 1, target);
+        inactive = 0;
+    } else {
+        print('-> waiting for > 12gb free ram.');
+        sleep(10000);
+    }
+}

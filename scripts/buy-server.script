@@ -1,0 +1,53 @@
+// price = mem * 55000
+// mem = price / 55000
+
+money = getServerMoneyAvailable("home") * 0.5;
+power = 1;
+cost = (Math.pow(2, power) * 55000);
+logToggle = 0;
+
+if (money < 1760000) {
+    print('-> WARNING less then 1.760.000');
+    exit();
+}
+
+while(money > cost)
+{
+    power++;
+    cost = (Math.pow(2,power) * 55000);
+}
+
+mem = Math.pow(2, (power - 1));
+
+if (mem > 1048576) {
+    print('-> WARNING 1048576 is maximum memory');
+    mem = 1048576;
+}
+
+newHostname = purchaseServer("worker", mem);
+
+write("worker.txt", "", "w");
+
+if (newHostname !== "") {
+    print('-> buying ' + mem + 'gb server for ' + Math.round(cost) + '$');
+    scp("attack.script", newHostname);
+    scp("attack-helper.script", newHostname);
+    scp("monitoring.script", newHostname);
+    scp("remote-grow.script", newHostname);
+    scp("remote-hack.script", newHostname);
+    scp("remote-weaken.script", newHostname);
+    scp("worker.txt", newHostname);
+    log = "buying " + newHostname + " (" + mem + "GB)" + " for " + Math.round(cost) + "$";
+    print('-> sending log on port: ' + 2);
+    while(true) {
+        if (peek(2) == 'NULL PORT DATA') {
+            print('-> transmitting log: ' + log);
+            writePort(2, log);
+            break;
+        } else if (peek(2) != 'NULL PORT DATA') {
+            print('-> waiting for bandwith on port: ' + 2);
+        }
+    }
+} else {
+    print('-> ERROR buying ' + mem + 'gb server for ' + Math.round(cost) + '$');
+}

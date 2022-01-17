@@ -1,0 +1,8 @@
+file = read("server-db.txt");
+rows = file.split("\r\n");
+
+for (i = 0; i < rows.length - 1; i++) {
+    target = rows[i].split(",");
+    print('-> found target: ' + target[0]);
+    killall(target[0]);
+}
