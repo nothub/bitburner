@@ -7,6 +7,9 @@
 !/update.js
 !/scripts/**
 
+# build
+!/Makefile
+
 # docs
 !/*.md
 
