@@ -1,19 +1,11 @@
-# ignore all files
 *
-# but include directories
 !*/
 
-# code
-!/update.js
-!/scripts/**
-
-# build
-!/Makefile
-
-# docs
 !/*.md
-
-# misc
 !/.editorconfig
+!/.eslintrc.yml
 !/.gitignore
 !/LICENSE
+!/Makefile
+!/scripts/**
+!/update.js
