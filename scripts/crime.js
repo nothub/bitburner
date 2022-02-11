@@ -16,13 +16,15 @@ const crime_names = [
 function smoothCriminal(ns) {
     let crimes = crime_names.map(ns.getCrimeStats)
         .sort((a, b) => (b.money / b.time) * ns.getCrimeChance(b.name) - (a.money / a.time) * ns.getCrimeChance(a.name))
-    if (crimes.length > 0) ns.commitCrime(crimes[0].name)
+    if (crimes.length > 0) {
+        const bestCrime = crimes[0].name;
+        ns.commitCrime(bestCrime)
+    }
 }
 
 export async function main(ns) {
     while (true) {
-        if (ns.getPlayer().isBusy) continue
-        smoothCriminal(ns);
+        if (!ns.isBusy()) smoothCriminal(ns);
         await ns.sleep(1000)
     }
 }
