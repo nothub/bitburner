@@ -3,7 +3,7 @@ env:
 extends: eslint:recommended
 parserOptions:
   sourceType: module
-  ecmaVersion: 11
+  ecmaVersion: 8
 rules: {
   "no-unused-vars": [ "warn", { "vars": "all", "args": "all", "ignoreRestSiblings": false } ]
 }
