@@ -23,6 +23,7 @@ function smoothCriminal(ns) {
 }
 
 export async function main(ns) {
+    /* eslint-disable-next-line no-constant-condition */
     while (true) {
         if (!ns.isBusy()) smoothCriminal(ns);
         await ns.sleep(1000)
