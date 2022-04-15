@@ -1,16 +1,16 @@
 const crime_names = [
-    "Assassination",
-    "Bond Forgery",
-    "Deal Drugs",
-    "Grand Theft Auto",
-    "Heist",
-    "Homicide",
-    "Kidnap",
-    "Larceny",
-    "Mug",
-    "Rob Store",
     "Shoplift",
+    "Rob Store",
+    "Mug",
+    "Larceny",
+    "Deal Drugs",
+    "Bond Forgery",
     "Traffick Arms",
+    "Homicide",
+    "Grand Theft Auto",
+    "Kidnap",
+    "Assassination",
+    "Heist",
 ]
 
 function smoothCriminal(ns) {
