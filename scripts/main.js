@@ -30,11 +30,12 @@ export async function main(ns) {
         const threads = Math.trunc(ns.getServerMaxRam(server) / attack_memory)
         if (threads <= 0) continue
         const scripts = ["self-grow.script", "self-hack.script", "self-weak.script"]
-        for (let i = 0; i < i + 1; i++) {
+        for (let i = 0; true; i++) {
             const script = scripts[i % scripts.length]
             await ns.scp(script, "home", server);
             const pid = ns.exec(script, server, threads)
             if (pid === 0) break
+            ns.tprint(script)
         }
         ns.tprint("utilized server: " + server + " (" + ns.getServerUsedRam(server) + "/" + ns.getServerMaxRam(server) + " GB @ " + threads + " threads)")
     }
