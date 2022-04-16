@@ -25,16 +25,17 @@ export async function main(ns) {
 
     for (let server of servers_pwned) {
         ns.killall(server)
-        let threads = Math.trunc(ns.getServerMaxRam(server) / (0.18 + 0.18 + 0.175))
-        threads = Math.trunc(ns.getServerMaxRam(server) / 5.35) // TODO: fix thread calculation
+        let attack_memory = 0.18 + 0.18 + 0.175
+        attack_memory = 5.35 // TODO: fix thread calculation
+        const threads = Math.trunc(ns.getServerMaxRam(server) / attack_memory)
         if (threads <= 0) continue
-        await ns.scp(["self-grow.script", "self-hack.script", "self-weak.script"], "home", server);
-        const process_id_grow = ns.exec("self-grow.script", server, threads)
-        if (process_id_grow === 0) ns.tprint("failed starting self-grow.script on " + server)
-        const process_id_hack = ns.exec("self-hack.script", server, threads)
-        if (process_id_hack === 0) ns.tprint("failed starting self-hack.script on " + server)
-        const process_id_weaken = ns.exec("self-weak.script", server, threads)
-        if (process_id_weaken === 0) ns.tprint("failed starting self-weak.script on " + server)
+        const scripts = ["self-grow.script", "self-hack.script", "self-weak.script"]
+        for (let i = 0; i < i + 1; i++) {
+            const script = scripts[i % scripts.length]
+            await ns.scp(script, "home", server);
+            const pid = ns.exec(script, server, threads)
+            if (pid === 0) break
+        }
         ns.tprint("utilized server: " + server + " (" + ns.getServerUsedRam(server) + "/" + ns.getServerMaxRam(server) + " GB @ " + threads + " threads)")
     }
 
