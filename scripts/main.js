@@ -96,6 +96,7 @@ export async function main(ns) {
             .reduce((a, b) => a >= b ? a : b)
         const worker_name = ns.purchaseServer("worker", mem)
         if (worker_name.length > 0) ns.tprint("bought worker: " + worker_name + " (" + mem + "GB)")
+        else ns.tprint("ERROR: failed buying worker: " + worker_name + " (" + mem + "GB)")
     }
     for (let worker of ns.getPurchasedServers()) {
         ns.tprint("worker: " + worker + " (" + ns.getServerMaxRam(worker) + "GB)")
