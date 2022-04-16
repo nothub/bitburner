@@ -20,6 +20,7 @@ export async function main(ns) {
     }
     ns.tprint("factions: " + ns.getPlayer().factions)
 
+    await spawn_proc("tor.js", HOME)
     await spawn_proc("augmentations.js", HOME)
     await spawn_proc("upgrade-hacknet.script", HOME)
 
@@ -28,6 +29,7 @@ export async function main(ns) {
         .filter(s => s !== HOME)
         .filter(s => !ns.getPurchasedServers().includes(s))
         .filter(s => ns.hasRootAccess(s))
+        .filter(s => ns.getServerRequiredHackingLevel(s) <= ns.getPlayer().hacking)
 
     ns.tprint("known network (" + network.length + "): " + network)
     ns.tprint("pwned targets (" + targets.length + "): " + targets)
