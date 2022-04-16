@@ -23,32 +23,17 @@ export async function main(ns) {
     await spawn_proc("augmentations.js", HOME)
     await spawn_proc("upgrade-hacknet.script", HOME)
 
-    let servers_known = [HOME];
-
-    let scanning = true
-    while (scanning) {
-        let countInitial = servers_known.length
-        for (let server of servers_known) {
-            await hack(server);
-            servers_known = servers_known.concat(ns.scan(server)
-                .filter(s => !servers_known.includes(s))
-                .filter(s => !ns.getPurchasedServers().includes(s)))
-        }
-        if (countInitial === servers_known.length) {
-            scanning = false
-        }
-    }
-
-    let servers_pwned = servers_known
+    const network = await scan()
+    const targets = network
         .filter(s => s !== HOME)
+        .filter(s => !ns.getPurchasedServers().includes(s))
         .filter(s => ns.hasRootAccess(s))
 
-    //ns.tprint("total network (" + servers_known.length + ") : " + servers_known)
-    //ns.tprint("pwned targets (" + servers_pwned.length + ") : " + servers_pwned)
-
-    const spacers = servers_pwned.reduce((a, b) => a.length >= b.length ? a : b).length + 1
+    ns.tprint("known network (" + network.length + "): " + network)
+    ns.tprint("pwned targets (" + targets.length + "): " + targets)
 
     function spacer(host) {
+        const spacers = targets.reduce((a, b) => a.length >= b.length ? a : b).length + 1
         let spacer = ""
         for (let i = 0; i < spacers - host.length; i++) {
             spacer = spacer + " "
@@ -56,7 +41,7 @@ export async function main(ns) {
         return spacer
     }
 
-    for (let server of servers_pwned) {
+    for (let server of targets) {
         ns.killall(server)
         let attack_memory = 0.18 + 0.18 + 0.175
         attack_memory = 5.35 // TODO: fix thread calculation
@@ -68,18 +53,53 @@ export async function main(ns) {
         ns.tprint("self-pwn: " + server + spacer(server) + ns.getServerUsedRam(server) + "/" + ns.getServerMaxRam(server) + " GB with " + threads + " threads")
     }
 
-    // TODO: purchase servers
-
-    for (let worker of ns.getPurchasedServers()) {
-        ns.tprint("worker: " + worker)
-        // TODO: link worker botnet
+    function worker_memory_range() {
+        let range = []
+        let current = 2
+        while (current <= 1048576) {
+            range.push(current)
+            current = current * 2
+        }
+        return range
     }
 
-    for (let server of HACK_MANUAL.filter(s => ns.hasRootAccess(s))) {
+    // TODO: purchase workers
+    let mem = worker_memory_range()
+        .filter(m => ns.getServerMoneyAvailable("home") >= m * 55000)
+        .reduce((a, b) => a >= b ? a : b)
+    // TODO: price wrong?
+    const worker_name = ns.purchaseServer("worker", mem)
+    ns.tprint("bought worker: " + worker_name + " (" + mem + "GB)")
+
+    for (let worker of ns.getPurchasedServers()) {
+        ns.tprint("worker: " + worker + " (" + ns.getServerMaxRam(worker) + "GB)")
+        // TODO: link worker slaves
+    }
+
+    for (let server of targets.filter(t => HACK_MANUAL.includes(t))) {
         ns.tprint("manual-hack: " + server)
         ns.connect(server)
         await ns.singularity.manualHack()
         ns.connect(HOME)
+    }
+
+    async function scan() {
+        let network = [HOME];
+        let scanned = []
+        let scanning = true
+        while (scanning) {
+            let countInitial = network.length
+            for (let server of network) {
+                if (scanned.includes(server)) continue
+                await hack(server);
+                network = network.concat(ns.scan(server).filter(s => !network.includes(s)))
+                scanned.push(server)
+            }
+            if (countInitial === network.length) {
+                scanning = false
+            }
+        }
+        return network;
     }
 
     function hack(host) {
@@ -110,7 +130,6 @@ export async function main(ns) {
     }
 
     async function spawn_proc(script, server, threads = 1) {
-        ns.tprint("spawning process: " + script + " on " + server + " with " + threads + " threads")
         ns.kill(script, server)
         if (server !== HOME) await ns.scp(script, HOME, server);
         if (ns.exec(script, server, threads) === 0) {
