@@ -7,6 +7,7 @@ export async function main(ns) {
     if (ns.fileExists("Formulas.exe", HOME)) {
         ns.tprint("formulas: " + Object.keys(ns.formulas))
     }
+    ns.tprint("factions: " + ns.getPlayer().factions)
 
     await spawn_proc("upgrade-hacknet.script", HOME)
 
