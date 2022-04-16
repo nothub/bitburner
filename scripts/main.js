@@ -29,13 +29,11 @@ export async function main(ns) {
         attack_memory = 5.35 // TODO: fix thread calculation
         const threads = Math.trunc(ns.getServerMaxRam(server) / attack_memory)
         if (threads <= 0) continue
-        const scripts = ["self-grow.script", "self-hack.script", "self-weak.script"]
-        for (let i = 0; true; i++) {
-            const script = scripts[i % scripts.length]
+        for (let script of ["self-grow.script", "self-hack.script", "self-weak.script"]) {
             await ns.scp(script, "home", server);
-            const pid = ns.exec(script, server, threads)
-            if (pid === 0) break
-            ns.tprint(script)
+            if (ns.exec(script, server, threads) === 0) {
+                ns.tprint("ERROR: pid 0 " + script + " on " + server + " @ " + threads + " threads")
+            }
         }
         ns.tprint("utilized server: " + server + " (" + ns.getServerUsedRam(server) + "/" + ns.getServerMaxRam(server) + " GB @ " + threads + " threads)")
     }
