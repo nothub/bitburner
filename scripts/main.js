@@ -2,13 +2,25 @@ const HOME = "home";
 
 const HACK_MANUAL = ["CSEC", "avmnite-02h"]
 
+const MOTD = `
+.        .  .
+|     o _|_ |
+|.-.  .  |  |.-. .  . .--..--. .-. .--.
+|   ) |  |  |   )|  | |   |  |(.-' |
+'\`-'-' \`-\`-''\`-' \`--\`-'   '  \`-\`--''
+
+`
+
 export async function main(ns) {
+
+    ns.tprint(MOTD)
 
     if (ns.fileExists("Formulas.exe", HOME)) {
         ns.tprint("formulas: " + Object.keys(ns.formulas))
     }
     ns.tprint("factions: " + ns.getPlayer().factions)
 
+    await spawn_proc("augmentations.js", HOME)
     await spawn_proc("upgrade-hacknet.script", HOME)
 
     let servers_known = [HOME];
@@ -53,14 +65,7 @@ export async function main(ns) {
         for (let script of ["self-grow.script", "self-hack.script", "self-weak.script"]) {
             await spawn_proc(script, server, threads)
         }
-        ns.tprint("self-pwn: " + server + spacer(server) + "(" + ns.getServerUsedRam(server) + "/" + ns.getServerMaxRam(server) + " GB @ " + threads + " threads)")
-    }
-
-    for (let server of HACK_MANUAL.filter(s => ns.hasRootAccess(s))) {
-        ns.tprint("manual-hack: " + server)
-        ns.connect(server)
-        await ns.singularity.manualHack()
-        ns.connect(HOME)
+        ns.tprint("self-pwn: " + server + spacer(server) + ns.getServerUsedRam(server) + "/" + ns.getServerMaxRam(server) + " GB with " + threads + " threads")
     }
 
     // TODO: purchase servers
@@ -68,6 +73,13 @@ export async function main(ns) {
     for (let worker of ns.getPurchasedServers()) {
         ns.tprint("worker: " + worker)
         // TODO: link worker botnet
+    }
+
+    for (let server of HACK_MANUAL.filter(s => ns.hasRootAccess(s))) {
+        ns.tprint("manual-hack: " + server)
+        ns.connect(server)
+        await ns.singularity.manualHack()
+        ns.connect(HOME)
     }
 
     function hack(host) {
@@ -98,10 +110,11 @@ export async function main(ns) {
     }
 
     async function spawn_proc(script, server, threads = 1) {
+        ns.tprint("spawning process: " + script + " on " + server + " with " + threads + " threads")
         ns.kill(script, server)
         if (server !== HOME) await ns.scp(script, HOME, server);
         if (ns.exec(script, server, threads) === 0) {
-            ns.tprint("ERROR: pid 0 " + script + " on " + server + " @ " + threads + " threads")
+            ns.tprint("ERROR: pid 0 " + script + " on " + server + " with " + threads + " threads")
         }
     }
 
