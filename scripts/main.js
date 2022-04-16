@@ -20,9 +20,22 @@ export async function main(ns) {
     }
     ns.tprint("factions: " + ns.getPlayer().factions)
 
+    ns.tprint("starting: tor.js")
     await spawn_proc("tor.js", HOME)
+    await ns.sleep(1000)
+
+    ns.tprint("starting: augmentations.js")
     await spawn_proc("augmentations.js", HOME)
-    await spawn_proc("upgrade-hacknet.script", HOME)
+    await ns.sleep(1000)
+
+    let hacknet_production = 0
+    for (let i = 0; i < ns.hacknet.numNodes(); i++) {
+        hacknet_production = hacknet_production + ns.hacknet.getNodeStats(i).production
+    }
+    if (hacknet_production < 100000) {
+        ns.tprint("starting: upgrade-hacknet.script")
+        await spawn_proc("upgrade-hacknet.script", HOME)
+    }
 
     const network = await scan()
     const targets = network
@@ -66,13 +79,25 @@ export async function main(ns) {
     }
 
     // TODO: purchase workers
-    let mem = worker_memory_range()
-        .filter(m => ns.getServerMoneyAvailable("home") >= m * 55000)
-        .reduce((a, b) => a >= b ? a : b)
-    // TODO: price wrong?
-    const worker_name = ns.purchaseServer("worker", mem)
-    ns.tprint("bought worker: " + worker_name + " (" + mem + "GB)")
-
+    ns.tprint("workers: " + ns.getPurchasedServers().length + "/" + ns.getPurchasedServerLimit())
+    if (ns.getPurchasedServers().length >= ns.getPurchasedServerLimit()) {
+        const worker_min = ns.getPurchasedServers()
+            .reduce((a, b) => ns.getServerMaxRam(a) < ns.getServerMaxRam(b) ? a : b)
+        const worker_max = ns.getPurchasedServers()
+            .reduce((a, b) => ns.getServerMaxRam(a) >= ns.getServerMaxRam(b) ? a : b)
+        ns.tprint("workers: min=" + worker_min + " max=" + worker_max)
+        if (ns.getServerMaxRam(worker_max) > ns.getServerMaxRam(worker_min)) {
+            ns.tprint("deleting worker: " + worker_min + " (" + ns.getServerMaxRam(worker_min) + "GB)")
+            ns.deleteServer(worker_min)
+        }
+    }
+    if (ns.getPurchasedServers().length < ns.getPurchasedServerLimit()) {
+        let mem = worker_memory_range()
+            .filter(m => ns.getServerMoneyAvailable(HOME) >= m * 55000)
+            .reduce((a, b) => a >= b ? a : b)
+        const worker_name = ns.purchaseServer("worker", mem)
+        if (worker_name.length > 0) ns.tprint("bought worker: " + worker_name + " (" + mem + "GB)")
+    }
     for (let worker of ns.getPurchasedServers()) {
         ns.tprint("worker: " + worker + " (" + ns.getServerMaxRam(worker) + "GB)")
         // TODO: link worker slaves
