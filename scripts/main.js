@@ -78,25 +78,37 @@ export async function main(ns) {
         return range
     }
 
-    // workers
-    let best_worker = ns.getPurchasedServers().reduce((a, b) => ns.getServerMaxRam(a) >= ns.getServerMaxRam(b) ? a : b)
-    const worst_worker = ns.getPurchasedServers().reduce((a, b) => ns.getServerMaxRam(a) < ns.getServerMaxRam(b) ? a : b)
-    ns.tprint("workers: " + ns.getPurchasedServers().length + "/" + ns.getPurchasedServerLimit() + " min=" + ns.getServerMaxRam(worst_worker) + "GB max=" + ns.getServerMaxRam(best_worker) + "GB")
-    // if workers full
-    if (ns.getPurchasedServers().length >= ns.getPurchasedServerLimit()) {
-        if (ns.getServerMaxRam(best_worker) > ns.getServerMaxRam(worst_worker)) {
-            ns.tprint("deleting worker: " + worst_worker + " (" + ns.getServerMaxRam(worst_worker) + "GB)")
-            ns.deleteServer(worst_worker)
+    function buy_worker(memory_minimum) {
+        let memory_range = worker_memory_range()
+            .filter(m => m >= memory_minimum)
+            .filter(m => ns.getServerMoneyAvailable(HOME) >= m * 55000);
+        if (memory_range.length <= 0) {
+            ns.tprint("insufficient funds for new worker!")
+            return
         }
-    }
-    if (ns.getPurchasedServers().length < ns.getPurchasedServerLimit()) {
-        let mem = worker_memory_range()
-            .filter(m => m >= ns.getServerMaxRam(best_worker))
-            .filter(m => ns.getServerMoneyAvailable(HOME) >= m * 55000)
-            .reduce((a, b) => a >= b ? a : b)
+        let mem = memory_range.reduce((a, b) => a >= b ? a : b)
         const worker_name = ns.purchaseServer("worker", mem)
         if (worker_name.length > 0) ns.tprint("bought worker: " + worker_name + " (" + mem + "GB)")
         else ns.tprint("ERROR: failed buying worker: " + worker_name + " (" + mem + "GB)")
+    }
+
+    // workers
+    if (ns.getPurchasedServers().length > 0) {
+        let best_worker = ns.getPurchasedServers().reduce((a, b) => ns.getServerMaxRam(a) >= ns.getServerMaxRam(b) ? a : b)
+        const worst_worker = ns.getPurchasedServers().reduce((a, b) => ns.getServerMaxRam(a) < ns.getServerMaxRam(b) ? a : b)
+        ns.tprint("workers: " + ns.getPurchasedServers().length + "/" + ns.getPurchasedServerLimit() + " min=" + ns.getServerMaxRam(worst_worker) + "GB max=" + ns.getServerMaxRam(best_worker) + "GB")
+        // if workers full
+        if (ns.getPurchasedServers().length >= ns.getPurchasedServerLimit()) {
+            if (ns.getServerMaxRam(best_worker) > ns.getServerMaxRam(worst_worker)) {
+                ns.tprint("deleting worker: " + worst_worker + " (" + ns.getServerMaxRam(worst_worker) + "GB)")
+                ns.deleteServer(worst_worker)
+            }
+        }
+        if (ns.getPurchasedServers().length < ns.getPurchasedServerLimit()) {
+            buy_worker(ns.getServerMaxRam(best_worker));
+        }
+    } else {
+        buy_worker(2);
     }
     for (let worker of ns.getPurchasedServers()) {
         ns.tprint("worker: " + worker + " (" + ns.getServerMaxRam(worker) + "GB)")
