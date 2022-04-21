@@ -110,7 +110,7 @@ export async function main(ns) {
     }
     for (let worker of ns.getPurchasedServers()) {
         ns.tprint("worker: " + worker + " (" + ns.getServerMaxRam(worker) + "GB)")
-        // TODO: link worker slaves
+        // TODO: link worker slaves (see botnet-linker.script)
     }
 
     for (let server of targets.filter(t => HACK_MANUAL.includes(t))) {
