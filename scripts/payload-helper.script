@@ -2,14 +2,14 @@ memory = getServerRam(args[0]);
 
 if (args[0] != 'home' && memory[0] >= 2) {
     print('-> payload-helper executing on target: ' + args[0]);
-    scp('loop-hack.script', args[0]);
-    scp('loop-grow.script', args[0]);
-    scp('loop-weaken.script', args[0]);
-    exec("loop-hack.script", args[0]);
-    exec("loop-grow.script", args[0]);
+    scp('self-hack.script', args[0]);
+    scp('self-grow.script', args[0]);
+    scp('self-weak.script', args[0]);
+    exec("self-hack.script", args[0]);
+    exec("self-grow.script", args[0]);
     exithelper = 0;
     for (t = Math.floor(memory[0] / 1.75); t > 0; t--) {
-        if (exec("loop-weaken.script", args[0], t)) {
+        if (exec("self-weak.script", args[0], t)) {
             exithelper = 1;
         } else {
             if (exithelper == 1) {

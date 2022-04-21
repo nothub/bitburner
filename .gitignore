@@ -9,3 +9,4 @@
 !/Makefile
 !/scripts/**
 !/update.js
+!/package.json
