@@ -175,6 +175,7 @@ export async function main(ns) {
             return
         }
         if (blocking) {
+            ns.tprint("blocking wait for " + script + " on " + server)
             while (ns.ps(server).map(p => p.pid).filter(p => p === pid).length > 0) {
                 await ns.sleep(100)
             }
