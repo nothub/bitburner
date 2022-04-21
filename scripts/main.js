@@ -176,10 +176,12 @@ export async function main(ns) {
             return
         }
         if (blocking) {
-            ns.tprint("blocking wait for " + script + " on " + server)
+            ns.tprint("blocking: waiting for " + script + " on " + server)
+            const timestamp_pre = Date.now();
             while (ns.ps(server).map(p => p.pid).filter(p => p === pid).length > 0) {
-                await ns.sleep(100)
+                await ns.sleep(1)
             }
+            ns.tprint("blocking: " + script + " on " + server + " took " + (Date.now() - timestamp_pre) + "ms")
         }
     }
 
