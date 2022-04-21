@@ -19,6 +19,8 @@ export async function main(ns) {
     }
     ns.tprint("factions: " + ns.getPlayer().factions)
 
+    ns.tprint("karma: " + ns.heart.break().toFixed(2))
+
     ns.tprint("starting: tor.js")
     await spawn_proc("tor.js", HOME, true)
 
