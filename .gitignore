@@ -5,6 +5,7 @@
 !/.editorconfig
 !/.eslintrc.yml
 !/.gitignore
+!/.github/**
 !/LICENSE
 !/Makefile
 !/scripts/**
