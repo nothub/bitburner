@@ -87,7 +87,7 @@ export async function main(ns) {
         let mem = memory_range.reduce((a, b) => a >= b ? a : b)
         const worker_name = ns.purchaseServer("worker", mem)
         if (worker_name.length > 0) ns.tprint("bought worker: " + worker_name + " (" + mem + "GB)")
-        else ns.tprint("ERROR: failed buying worker: " + worker_name + " (" + mem + "GB)")
+        else ns.tprint("ERROR: failed buying worker: " + mem + "GB")
     }
 
     // workers
@@ -116,6 +116,7 @@ export async function main(ns) {
     for (let server of targets.filter(t => HACK_MANUAL.includes(t))) {
         ns.tprint("manual-hack: " + server)
         ns.connect(server)
+        await ns.singularity.installBackdoor()
         await ns.singularity.manualHack()
         ns.connect(HOME)
     }
