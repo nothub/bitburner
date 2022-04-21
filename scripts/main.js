@@ -1,6 +1,6 @@
 const HOME = "home";
 
-const HACK_MANUAL = ["CSEC", "avmnite-02h"]
+const HACK_MANUAL = ["CSEC", "avmnite-02h", "I.I.I.I", "run4theh111z"]
 
 const MOTD = `
 ▄▄▄▄· ▪  ▄▄▄▄▄▄▄▄▄·             • ▌ ▄ ·. ▄▄▄ .▄▄▄
@@ -124,55 +124,7 @@ export async function main(ns) {
     }
 
     // http to outside world
-    for (let host of network) {
-        const server = ns.getServer(host)
-        let infos = {
-            name: server.hostname,
-
-            home: server.hostname === HOME,
-            worker: server.purchasedByPlayer,
-
-            ip: server.ip,
-            organization: server.organizationName,
-
-            requiredHackingLevel: server.requiredHackingSkill,
-            rootAccess: server.hasAdminRights,
-            backdoorInstalled: server.backdoorInstalled,
-
-            portsOpen: server.openPortCount,
-            portsRequired: server.numOpenPortsRequired,
-
-            portFtpOpen: server.ftpPortOpen,
-            portHttpOpen: server.httpPortOpen,
-            portSmtpOpen: server.smtpPortOpen,
-            portSqlOpen: server.sqlPortOpen,
-            portSshOpen: server.sshPortOpen,
-
-            cores: server.cpuCores,
-
-            ramUsed: server.ramUsed,
-            ramMax: server.maxRam,
-
-            moneyAvailable: server.moneyAvailable,
-            moneyMax: server.moneyMax,
-
-            growth: server.serverGrowth,
-
-            securityLevel: server.hackDifficulty,
-            securityLevelMin: server.minDifficulty,
-        };
-
-        await fetch("https://httpbin.org/anything", {
-            method: "post",
-            headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
-            body: JSON.stringify(infos)
-        })
-            .then(res => res.json())
-            .then((json) => ns.tprint(json))
-            .catch(err => ns.tprint(err))
-
-        break
-    }
+    //await httpbin();
 
     async function scan() {
         let network = [HOME];
@@ -235,6 +187,58 @@ export async function main(ns) {
                 await ns.sleep(1)
             }
             ns.tprint("blocking: " + script + " on " + server + " took " + (Date.now() - timestamp_pre) + "ms")
+        }
+    }
+
+    async function httpbin() {
+        for (let host of network) {
+            const server = ns.getServer(host)
+            let infos = {
+                hostname: server.hostname,
+
+                home: server.hostname === HOME,
+                worker: ns.getPurchasedServers().includes(server.hostname),
+
+                ip: server.ip,
+                organization: server.organizationName,
+
+                requiredHackingLevel: server.requiredHackingSkill,
+                rootAccess: server.hasAdminRights,
+                backdoorInstalled: server.backdoorInstalled,
+
+                portsOpen: server.openPortCount,
+                portsRequired: server.numOpenPortsRequired,
+
+                portOpenFtp: server.ftpPortOpen,
+                portOpenHttp: server.httpPortOpen,
+                portOpenSmtp: server.smtpPortOpen,
+                portOpenSql: server.sqlPortOpen,
+                portOpenSsh: server.sshPortOpen,
+
+                cores: server.cpuCores,
+
+                ramUsed: server.ramUsed,
+                ramMax: server.maxRam,
+
+                money: server.moneyAvailable,
+                moneyMax: server.moneyMax,
+
+                growthFactor: server.serverGrowth,
+
+                securityLevel: server.hackDifficulty,
+                securityLevelMin: server.minDifficulty,
+            };
+
+            await fetch("https://httpbin.org/anything", {
+                method: "post",
+                headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
+                body: JSON.stringify(infos)
+            })
+                .then(res => res.json())
+                .then((json) => ns.tprint(json))
+                .catch(err => ns.tprint(err))
+
+            break
         }
     }
 
