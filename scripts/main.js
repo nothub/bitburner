@@ -123,6 +123,57 @@ export async function main(ns) {
         ns.connect(HOME)
     }
 
+    // http to outside world
+    for (let host of network) {
+        const server = ns.getServer(host)
+        let infos = {
+            name: server.hostname,
+
+            home: server.hostname === HOME,
+            worker: server.purchasedByPlayer,
+
+            ip: server.ip,
+            organization: server.organizationName,
+
+            requiredHackingLevel: server.requiredHackingSkill,
+            rootAccess: server.hasAdminRights,
+            backdoorInstalled: server.backdoorInstalled,
+
+            portsOpen: server.openPortCount,
+            portsRequired: server.numOpenPortsRequired,
+
+            portFtpOpen: server.ftpPortOpen,
+            portHttpOpen: server.httpPortOpen,
+            portSmtpOpen: server.smtpPortOpen,
+            portSqlOpen: server.sqlPortOpen,
+            portSshOpen: server.sshPortOpen,
+
+            cores: server.cpuCores,
+
+            ramUsed: server.ramUsed,
+            ramMax: server.maxRam,
+
+            moneyAvailable: server.moneyAvailable,
+            moneyMax: server.moneyMax,
+
+            growth: server.serverGrowth,
+
+            securityLevel: server.hackDifficulty,
+            securityLevelMin: server.minDifficulty,
+        };
+
+        await fetch("https://httpbin.org/anything", {
+            method: "post",
+            headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
+            body: JSON.stringify(infos)
+        })
+            .then(res => res.json())
+            .then((json) => ns.tprint(json))
+            .catch(err => ns.tprint(err))
+
+        break
+    }
+
     async function scan() {
         let network = [HOME];
         let scanned = []
