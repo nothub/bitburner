@@ -20,20 +20,19 @@ export async function main(ns) {
     ns.tprint("factions: " + ns.getPlayer().factions)
 
     ns.tprint("starting: tor.js")
-    await spawn_proc("tor.js", HOME)
-    await ns.sleep(1000)
+    await spawn_proc("tor.js", HOME, true)
 
     ns.tprint("starting: augmentations.js")
-    await spawn_proc("augmentations.js", HOME)
-    await ns.sleep(1000)
+    await spawn_proc("augmentations.js", HOME, true)
 
-    let hacknet_production = 0
-    for (let i = 0; i < ns.hacknet.numNodes(); i++) {
-        hacknet_production = hacknet_production + ns.hacknet.getNodeStats(i).production
-    }
+    // eslint-disable-next-line no-undef
+    let hacknet_production = _.range(0, ns.hacknet.numNodes())
+        .map(i => ns.hacknet.getNodeStats(i).production)
+        .reduce((a, b) => a + b, 0)
+    ns.tprint("hacknet production: " + hacknet_production.toFixed(2) + "$ / sec")
     if (hacknet_production < 100000) {
         ns.tprint("starting: upgrade-hacknet.script")
-        await spawn_proc("upgrade-hacknet.script", HOME)
+        await spawn_proc("upgrade-hacknet.script", HOME, false)
     }
 
     const network = await scan()
@@ -62,7 +61,7 @@ export async function main(ns) {
         const threads = Math.trunc(ns.getServerMaxRam(server) / attack_memory)
         if (threads <= 0) continue
         for (let script of ["self-grow.script", "self-hack.script", "self-weak.script"]) {
-            await spawn_proc(script, server, threads)
+            await spawn_proc(script, server, false, threads)
         }
         ns.tprint("self-pwn: " + server + spacer(server) + ns.getServerUsedRam(server) + "/" + ns.getServerMaxRam(server) + " GB with " + threads + " threads")
     }
@@ -167,11 +166,18 @@ export async function main(ns) {
         }
     }
 
-    async function spawn_proc(script, server, threads = 1) {
+    async function spawn_proc(script, server, blocking, threads = 1) {
         ns.kill(script, server)
         if (server !== HOME) await ns.scp(script, HOME, server);
-        if (ns.exec(script, server, threads) === 0) {
+        const pid = ns.exec(script, server, threads)
+        if (pid === 0) {
             ns.tprint("ERROR: pid 0 " + script + " on " + server + " with " + threads + " threads")
+            return
+        }
+        if (blocking) {
+            while (ns.ps(server).map(p => p.pid).filter(p => p === pid).length > 0) {
+                await ns.sleep(100)
+            }
         }
     }
 
