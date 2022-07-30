@@ -11,3 +11,5 @@
 !/scripts/**
 !/update.js
 !/package.json
+!/go.mod
+!/go.sum
