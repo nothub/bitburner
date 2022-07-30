@@ -1,6 +1,6 @@
 const HOME = "home";
 
-const HACK_MANUAL = ["CSEC", "avmnite-02h", "I.I.I.I", "run4theh111z"]
+const HACK_MANUAL = ["fulcrumassets", "CSEC", "avmnite-02h", "I.I.I.I", "run4theh111z", ".", "The-Cave", "darkweb"]
 
 const MOTD = `
 ▄▄▄▄· ▪  ▄▄▄▄▄▄▄▄▄·             • ▌ ▄ ·. ▄▄▄ .▄▄▄
