@@ -1,15 +1,9 @@
 {
   "name": "bitburner-scripts",
   "version": "1.0.0",
-  "description": "",
-  "main": "",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "hub",
-  "license": "MIT",
+  "types": "ns.d.ts",
   "dependencies": {
+    "@types/node": "^18.6.2",
     "lodash": "^4.17.21"
   }
 }
