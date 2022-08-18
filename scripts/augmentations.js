@@ -8,10 +8,10 @@ export async function main(ns) {
                 }
                 return true
             })
-        for (let a of augs) {
-            if (ns.getAugmentationPrice(a) <= ns.getServerMoneyAvailable("home")) {
-                ns.tprint("buying augmentation: " + a + " from " + faction)
-                ns.purchaseAugmentation(faction, a)
+        for (let aug of augs) {
+            if (ns.getAugmentationPrice(aug) <= ns.getServerMoneyAvailable("home")) {
+                ns.tprint("buying augmentation: " + aug + " from " + faction)
+                ns.purchaseAugmentation(faction, aug)
             }
         }
     }

@@ -117,10 +117,10 @@ export async function main(ns) {
 
     for (let server of targets.filter(t => HACK_MANUAL.includes(t))) {
         ns.tprint("manual-hack: " + server)
-        ns.connect(server)
+        ns.singularity.connect(server)
         await ns.singularity.installBackdoor()
         await ns.singularity.manualHack()
-        ns.connect(HOME)
+        ns.singularity.connect(HOME)
     }
 
     // http to outside world

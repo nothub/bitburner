@@ -13,19 +13,15 @@ const crime_names = [
     "Heist",
 ]
 
-function smoothCriminal(ns) {
-    let crimes = crime_names.map(ns.getCrimeStats)
-        .sort((a, b) => (b.money / b.time) * ns.getCrimeChance(b.name) - (a.money / a.time) * ns.getCrimeChance(a.name))
-    if (crimes.length > 0) {
-        const bestCrime = crimes[0].name;
-        ns.commitCrime(bestCrime)
-    }
-}
-
 export async function main(ns) {
     /* eslint-disable-next-line no-constant-condition */
     while (true) {
-        if (!ns.isBusy()) smoothCriminal(ns);
+        let crimes = crime_names.map(ns.getCrimeStats)
+            .sort((a, b) => (b.money / b.time) * ns.getCrimeChance(b.name) - (a.money / a.time) * ns.getCrimeChance(a.name))
+        if (crimes.length > 0) {
+            const bestCrime = crimes[0].name
+            await ns.sleep(ns.commitCrime(bestCrime))
+        }
         await ns.sleep(1000)
     }
 }
