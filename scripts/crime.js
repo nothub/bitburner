@@ -16,11 +16,11 @@ const crime_names = [
 export async function main(ns) {
     /* eslint-disable-next-line no-constant-condition */
     while (true) {
-        let crimes = crime_names.map(ns.getCrimeStats)
-            .sort((a, b) => (b.money / b.time) * ns.getCrimeChance(b.name) - (a.money / a.time) * ns.getCrimeChance(a.name))
+        let crimes = crime_names.map(ns.singularity.getCrimeStats)
+            .sort((a, b) => (b.money / b.time) * ns.singularity.getCrimeChance(b.name) - (a.money / a.time) * ns.singularity.getCrimeChance(a.name))
         if (crimes.length > 0) {
             const bestCrime = crimes[0].name
-            await ns.sleep(ns.commitCrime(bestCrime))
+            await ns.sleep(ns.singularity.commitCrime(bestCrime))
         }
         await ns.sleep(1000)
     }

@@ -3,8 +3,8 @@ const factions = ["Aevum", "Bachman & Associates", "BitRunners", "Blade Industri
 export async function main(ns) {
     ns.tprint("Missing Augmentations:")
     for (const faction of factions) {
-        for (const augment of ns.getAugmentationsFromFaction(faction)) {
-            if (!ns.getOwnedAugmentations(true).includes(augment)) {
+        for (const augment of ns.singularity.getAugmentationsFromFaction(faction)) {
+            if (!ns.singularity.getOwnedAugmentations(true).includes(augment)) {
                 ns.tprint(faction + " -> " + augment)
             }
         }
