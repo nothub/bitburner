@@ -42,7 +42,7 @@ export async function main(ns) {
         .filter(s => s !== HOME)
         .filter(s => !ns.getPurchasedServers().includes(s))
         .filter(s => ns.hasRootAccess(s))
-        .filter(s => ns.getServerRequiredHackingLevel(s) <= ns.getPlayer().hacking)
+        .filter(s => ns.getServerRequiredHackingLevel(s) <= ns.getHackingLevel())
 
     ns.tprint("known network (" + network.length + "): " + network)
     ns.tprint("pwned targets (" + targets.length + "): " + targets)
