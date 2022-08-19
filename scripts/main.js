@@ -24,8 +24,8 @@ export async function main(ns) {
     ns.tprint("starting: tor.js")
     await spawn_proc("tor.js", HOME, true)
 
-    ns.tprint("starting: augmentations.js")
-    await spawn_proc("augmentations.js", HOME, true)
+    //ns.tprint("starting: augmentations.js")
+    //await spawn_proc("augmentations.js", HOME, true)
 
     // eslint-disable-next-line no-undef
     let hacknet_production = _.range(0, ns.hacknet.numNodes())
@@ -33,8 +33,8 @@ export async function main(ns) {
         .reduce((a, b) => a + b, 0)
     ns.tprint("hacknet production: " + hacknet_production.toFixed(2) + "$ / sec")
     if (hacknet_production < 100000) {
-        ns.tprint("starting: upgrade-hacknet.script")
-        await spawn_proc("upgrade-hacknet.script", HOME, false)
+        //ns.tprint("starting: upgrade-hacknet.script")
+        //await spawn_proc("upgrade-hacknet.script", HOME, false)
     }
 
     const network = await scan()
