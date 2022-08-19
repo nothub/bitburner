@@ -174,7 +174,7 @@ export async function main(ns) {
 
     async function spawn_proc(script, server, blocking, threads = 1) {
         ns.kill(script, server)
-        if (server !== HOME) await ns.scp(script, HOME, server);
+        if (server !== HOME) await ns.scp(script, server, HOME);
         const pid = ns.exec(script, server, threads)
         if (pid === 0) {
             ns.tprint("ERROR: pid 0 " + script + " on " + server + " with " + threads + " threads")
@@ -231,7 +231,7 @@ export async function main(ns) {
 
             await fetch("https://httpbin.org/anything", {
                 method: "post",
-                headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
+                headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
                 body: JSON.stringify(infos)
             })
                 .then(res => res.json())
